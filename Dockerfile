@@ -1,12 +1,15 @@
 FROM ubuntu:18.04
 
-LABEL maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-
-ARG UNIFI_VERSION="6.2.25"
-
+ARG UNIFI_VERSION="6.2.25-de0c6132b7"
 ARG PKGURL=https://dl.ui.com/unifi/${UNIFI_VERSION}/unifi_sysvinit_all.deb
+
+LABEL maintainer="Thorsten Klein <iwilltry42@gmail.com>" \
+    release_post="https://community.ui.com/releases/UniFi-Network-Application-6-2-25/d9cb0897-3ef4-4dda-a5d6-c07530ff8a86" \
+    release_url="${PKGURL}"
+
+
 
 ENV BASEDIR=/usr/lib/unifi \
     DATADIR=/unifi/data \

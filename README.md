@@ -6,7 +6,7 @@ Forked from <https://github.com/jacobalberty/unifi-docker> (MIT License)
 
 ## `latest` tag
 
-`latest` is now tracking unifi 6.1.x as of 2021-03-21.
+`latest` is now tracking unifi 6.2.x as of 2021-03-21.
 
 ## multiarch
 
@@ -28,14 +28,13 @@ You will not be able to bind to lower ports by default. If you also pass the doc
 
 | Tag | Description |
 |-----|-------------|
-| [`latest`, `stable-6`, `6.1`](https://github.com/iwilltry42/unifi-docker/blob/master/Dockerfile) | Tracks UniFi stable version - 6.1.71 as of 2021-03-24 [Change Log 6-1-71](https://community.ui.com/releases/UniFi-Network-Controller-6-1-71/0cffd3ed-7429-4529-9a20-9fead78ebf66)|
-| [`latest-5`, `stable-5`, `5.0`](https://github.com/iwilltry42/unifi-docker/blob/master-5/Dockerfile) | Tracks UniFi 5.14 stable version - 5.14.23 as of 2020-09-14 |
+| [`latest`, `6.2`](https://github.com/iwilltry42/unifi-docker/blob/master/Dockerfile) | Tracks UniFi version - 6.2.25 as of 2021-05-19[Change Log 6-2-25](https://community.ui.com/releases/UniFi-Network-Application-6-2-25/d9cb0897-3ef4-4dda-a5d6-c07530ff8a86)|
 
 ### Latest Release Candidate tags
 
 | Version | Latest Tag |
 |---------|------------|
-| 6.1.x   | [`6.1.71-rc`](https://github.com/iwilltry42/unifi-docker/blob/6.1.71-rc/Dockerfile) |
+| 6.2.x   | [`6-2-25-rc`](https://github.com/iwilltry42/unifi/blob/6-2-25-rc/Dockerfile) |
 
 These tags generally track the UniFi APT repository. We do lead the repository a little when it comes to pushing the latest version. The latest version gets pushed when it moves from `release candidate` to `stable` instead of waiting for it to hit the repository.
 
