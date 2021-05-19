@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG UNIFI_VERSION="6.2.25-de0c6132b7"
+ARG UNIFI_VERSION="6.2.25"
 ARG PKGURL=https://dl.ui.com/unifi/${UNIFI_VERSION}/unifi_sysvinit_all.deb
 
 LABEL maintainer="Thorsten Klein <iwilltry42@gmail.com>" \
