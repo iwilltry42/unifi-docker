@@ -19,10 +19,12 @@ jobs:
           IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/unifi
           VERSION=latest
           SHORTREF=${GITHUB_SHA::8}
+          IS_TAGGED=false
 
           # If this is git tag, use the tag name as a docker tag
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
+            IS_TAGGED=true
           fi
           TAGS="${IMAGE_NAME}:${VERSION},${IMAGE_NAME}:${SHORTREF}"
 
@@ -36,6 +38,7 @@ jobs:
           # Set output parameters.
           echo ::set-output name=tags::${TAGS}
           echo ::set-output name=image_name::${IMAGE_NAME}
+          echo ::set-output name=is_tagged::${IS_TAGGED}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1.1.0
@@ -62,5 +65,5 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/arm/v7,linux/arm64/v8,linux/amd64
-          push: true
+          push: ${{ steps.prep.outputs.is_tagged }}
           tags: ${{ steps.prep.outputs.tags }}
