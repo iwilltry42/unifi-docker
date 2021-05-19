@@ -1,5 +1,9 @@
 # unifi-docker
 
+## Credit
+
+Forked from <https://github.com/jacobalberty/unifi-docker> (MIT License)
+
 ## `latest` tag
 
 `latest` is now tracking unifi 6.1.x as of 2021-03-21.
@@ -16,6 +20,7 @@ It is suggested you start running this as a non root user. The default right now
 You will not be able to bind to lower ports by default. If you also pass the docker run flag `--sysctl` with `net.ipv4.ip_unprivileged_port_start=0` then you will be able to freely bind to whatever port you wish. This should not be needed if you are using the default ports.
 
 ## Mongo and Docker for windows
+
  Unifi uses mongo store its data. Mongo uses the fsync() system call on its data files. Because of how docker for windows works you can't bind mount `/unifi/db/data` on a docker for windows container. Therefore `-v ~/unifi:/unifi` won't work.
  [Discussion on the issue](https://github.com/docker/for-win/issues/138).
 
@@ -23,18 +28,18 @@ You will not be able to bind to lower ports by default. If you also pass the doc
 
 | Tag | Description |
 |-----|-------------|
-| [`latest`, `stable-6`, `6.1`](https://github.com/jacobalberty/unifi-docker/blob/master/Dockerfile) | Tracks UniFi stable version - 6.1.71 as of 2021-03-24 [Change Log 6-1-71](https://community.ui.com/releases/UniFi-Network-Controller-6-1-71/0cffd3ed-7429-4529-9a20-9fead78ebf66)|
-| [`latest-5`, `stable-5`, `5.0`](https://github.com/jacobalberty/unifi-docker/blob/master-5/Dockerfile) | Tracks UniFi 5.14 stable version - 5.14.23 as of 2020-09-14 |
+| [`latest`, `stable-6`, `6.1`](https://github.com/iwilltry42/unifi-docker/blob/master/Dockerfile) | Tracks UniFi stable version - 6.1.71 as of 2021-03-24 [Change Log 6-1-71](https://community.ui.com/releases/UniFi-Network-Controller-6-1-71/0cffd3ed-7429-4529-9a20-9fead78ebf66)|
+| [`latest-5`, `stable-5`, `5.0`](https://github.com/iwilltry42/unifi-docker/blob/master-5/Dockerfile) | Tracks UniFi 5.14 stable version - 5.14.23 as of 2020-09-14 |
 
 ### Latest Release Candidate tags
 
 | Version | Latest Tag |
 |---------|------------|
-| 6.1.x   | [`6.1.71-rc`](https://github.com/jacobalberty/unifi-docker/blob/6.1.71-rc/Dockerfile) |
+| 6.1.x   | [`6.1.71-rc`](https://github.com/iwilltry42/unifi-docker/blob/6.1.71-rc/Dockerfile) |
 
 These tags generally track the UniFi APT repository. We do lead the repository a little when it comes to pushing the latest version. The latest version gets pushed when it moves from `release candidate` to `stable` instead of waiting for it to hit the repository.
 
-In adition to these tags you may tag specific versions as well, for example `jacobalberty/unifi:5.6.40` will get you unifi 5.6.40 no matter what the current version is. Release candidates now exist both under the `rc` tag and for tags with the extension `-rc` ie `jacobalberty/unifi:5.6.18-rc`. It is advised to use the specific versions as the `rc` tag may jump from 5.6.x to 5.8.x then back to 5.6.x as new release candidates come out.
+In adition to these tags you may tag specific versions as well, for example `iwilltry42/unifi:5.6.40` will get you unifi 5.6.40 no matter what the current version is. Release candidates now exist both under the `rc` tag and for tags with the extension `-rc` ie `iwilltry42/unifi:5.6.18-rc`. It is advised to use the specific versions as the `rc` tag may jump from 5.6.x to 5.8.x then back to 5.6.x as new release candidates come out.
 
 ## Description
 
@@ -51,7 +56,7 @@ Example to test with
 ```bash
 mkdir -p unifi/data
 mkdir -p unifi/log
-docker run --rm --init -p 8080:8080 -p 8443:8443 -p 3478:3478/udp -e TZ='Africa/Johannesburg' -v ~/unifi:/unifi --name unifi jacobalberty/unifi:stable
+docker run --rm --init -p 8080:8080 -p 8443:8443 -p 3478:3478/udp -e TZ='Africa/Johannesburg' -v ~/unifi:/unifi --name unifi iwilltry42/unifi:stable
 ```
 
 **Note** you must omit `-v ~/unifi:/unifi` on windows, but you can use a local volume e.g. `-v unifi:/unifi` (omit the leading ~/) to persist the data on a local volume.
@@ -62,6 +67,7 @@ A compose file has been included that will bring up mongo and the controller,
 using named volumes for important directories.
 
 Simply clone this repo or copy the `docker-compose.yml` file and run
+
 ```bash
 docker-compose up -d
 ```
@@ -74,7 +80,7 @@ The default example requires some l3 adoption method. You have a couple options 
 
 #### Force adoption IP
 
-Run UniFi Docker and open UniFi in browser. Go under Settings -> Controller and then enter the IP address of the Docker host machine in "Controller Hostname/IP", and check the "Override inform host with controller hostname/IP". Save settings and restart UniFi Docker container. 
+Run UniFi Docker and open UniFi in browser. Go under Settings -> Controller and then enter the IP address of the Docker host machine in "Controller Hostname/IP", and check the "Override inform host with controller hostname/IP". Save settings and restart UniFi Docker container.
 
 #### SSH Adoption
 
@@ -88,7 +94,6 @@ set-inform http://<host_ip>:8080/inform
 #### Other Options
 
 You can see more options on the [UniFi website](https://help.ubnt.com/hc/en-us/articles/204909754-UniFi-Layer-3-methods-for-UAP-adoption-and-management)
-
 
 ### Layer 2 Adoption
 
@@ -106,31 +111,29 @@ It is possible to configure the `macvlan` driver to bridge your container to the
 
 The `beta` image has been updated to support package installation at run time. With this change you can now install the beta releases on more systems, such as Synology. This should open up access to the beta program for more users of this docker image.
 
-
 If you would like to submit a new feature for the images the beta branch is probably a good one to apply it against as well. I will be cleaing up the Dockerfile under beta and gradually pushing out the improvements to the other branches. So any major changes should apply cleanly against the `beta` branch.
 
 ### Installing Beta Builds On The Command Line
 
-Using the Beta build is pretty easy, just use the `jacobalberty/unifi:beta` image and add `-e PKGURL=https://dl.ubnt.com/unifi/5.6.30/unifi_sysvinit_all.deb` to your usual command line.
+Using the Beta build is pretty easy, just use the `iwilltry42/unifi:beta` image and add `-e PKGURL=https://dl.ubnt.com/unifi/5.6.30/unifi_sysvinit_all.deb` to your usual command line.
 
 Simply replace the url to the debian package with the version you prefer.
-
 
 ### Building Beta Using `docker-compose.yml` Version 2
 
 This is just as easy when using version 2 of the docker-compose.yml file format.
 
-Under your containers service definition instead of using `image: jacobalberty/unifi` use the following:
+Under your containers service definition instead of using `image: iwilltry42/unifi` use the following:
 
 ```shell
-        image: jacobalberty/unifi:beta
+        image: iwilltry42/unifi:beta
          environment:
           PKGURL: https://dl.ubnt.com/unifi/5.6.40/unifi_sysvinit_all.deb
 ```
 
 Once again, simply change PKGURL to point to the package you would like to use.
 
-## Volumes:
+## Volumes
 
 ### `/unifi`
 
@@ -164,7 +167,6 @@ This is an entirely new volume. You can place scripts you want to launch every t
 
 Run information, in general you will not need to touch this volume. It is there to ensure UniFi has a place to write its PID files
 
-
 ### Legacy Volumes
 
 These are no longer actually volumes, rather they exist for legacy compatibility. You are urged to move to the new volumes ASAP.
@@ -177,7 +179,7 @@ New name: `/unifi/data`
 
 New name: `/unifi/log`
 
-## Environment Variables:
+## Environment Variables
 
 ### `UNIFI_HTTP_PORT`
 
@@ -223,7 +225,7 @@ Ex:
 --env JVM_MAX_THREAD_STACK_SIZE=1280k
 ```
 
-as a fix for https://community.ubnt.com/t5/UniFi-Routing-Switching/IMPORTANT-Debian-Ubuntu-users-MUST-READ-Updated-06-21/m-p/1968251#M48264
+as a fix for <https://community.ubnt.com/t5/UniFi-Routing-Switching/IMPORTANT-Debian-Ubuntu-users-MUST-READ-Updated-06-21/m-p/1968251#M48264>
 
 ### `JVM_EXTRA_OPTS`
 
@@ -236,8 +238,9 @@ Used to start the JVM with additional arguments.
 Default: `unset`
 
 ### `JVM_MAX_HEAP_SIZE`
-Java Virtual Machine (JVM) allocates available memory. 
-For larger installations a larger value is recommended. For memory constrained system this value can be lowered. 
+
+Java Virtual Machine (JVM) allocates available memory.
+For larger installations a larger value is recommended. For memory constrained system this value can be lowered.
 Default `1024M`
 
 ### External MongoDB environment variables
@@ -256,8 +259,7 @@ Maps to `statdb.mongo.uri`.
 
 Maps to `unifi.db.name`.
 
-
-## Expose:
+## Expose
 
 ### 8080/tcp - Device command/control
 
@@ -281,7 +283,6 @@ While micro-service patterns try to avoid running multiple processes in a contai
 
 `unifi.sh` executes and waits on the jsvc process which orchestrates running the controller as a service. The wrapper script also traps SIGTERM to issue the appropriate stop command to the unifi java `com.ubnt.ace.Launcher` process in the hopes that it helps keep the shutdown graceful.
 
-
 ## Init scripts
 
 You may now place init scripts to be launched during the unifi startup in /usr/local/unifi/init.d to perform any actions unique to your unifi setup. An example bash script to set up certificates is in `/usr/unifi/init.d/import_cert`.
@@ -304,4 +305,4 @@ For letsencrypt certs, we'll autodetect that and add the needed Identrust X3 CA 
 
 ## TODO
 
-This list is empty for now, please [add your suggestions](https://github.com/jacobalberty/unifi-docker/issues).
+This list is empty for now, please [add your suggestions](https://github.com/iwilltry42/unifi-docker/issues).
