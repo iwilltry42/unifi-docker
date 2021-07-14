@@ -1,17 +1,26 @@
-version: '3.7'
+version: '3.8'
 services:
   mongo:
     image: mongo:3.6
-    container_name: ${COMPOSE_PROJECT_NAME}_mongo
+    container_name: unifi-mongo
+    ports:
+      - 27017:27017
     networks:
       - unifi
     restart: always
     volumes:
-      - db:/data/db
-      - dbcfg:/data/configdb
-  controller:
-    image: "iwilltry42/unifi:${TAG:-latest}"
-    container_name: ${COMPOSE_PROJECT_NAME}_controller
+      - ./mongo/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - .local/mongo/data/db:/data/db
+      - .local/mongo/configdb:/data/configdb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ubnt-admin
+      MONGO_INITDB_ROOT_PASSWORD: ubnt-admin
+      MONGO_INITDB_DATABASE: unifi
+      MONGO_INITDB_USER: unifi
+      MONGO_INITDB_PASS: unifi
+  unifi:
+    image: "iwilltry42/unifi:6.2.26"
+    container_name: unifi
     depends_on:
       - mongo
     init: true
@@ -19,48 +28,54 @@ services:
       - unifi
     restart: always
     volumes:
-      - dir:/unifi
-      - data:/unifi/data
-      - log:/unifi/log
-      - cert:/unifi/cert
-      - init:/unifi/init.d
-      - run:/var/run/unifi
+      - .local/unifi:/unifi
+      - .local/unifi/data:/unifi/data
+      - .local/unifi/log:/unifi/log
+      - .local/unifi/cert:/unifi/cert
+      - .local/unifi/init:/unifi/init.d
+      - .local/unifi/run:/var/run/unifi
       # Mount local folder for backups and autobackups
-      - ./backup:/unifi/data/backup
-    user: unifi
+      - .local/unifi-backup:/unifi/data/backup
+    # user: unifi # if enabled, ensure that the user will have access to the .local/ and sub-directories
     sysctls:
       net.ipv4.ip_unprivileged_port_start: 0
     environment:
-      DB_URI: mongodb://mongo/unifi
-      STATDB_URI: mongodb://mongo/unifi_stat
+      DB_URI: mongodb://unifi:unifi@mongo/unifi
+      STATDB_URI: mongodb://unifi:unifi@mongo/unifi_stat
       DB_NAME: unifi
+      # UNIFI_RESET: "true" # reset to defaults
     ports:
-      - "3478:3478/udp" # STUN
-      - "6789:6789/tcp" # Speed test
-      - "8080:8080/tcp" # Device/ controller comm.
-      - "8443:8443/tcp" # Controller GUI/API as seen in a web browser
-      - "8880:8880/tcp" # HTTP portal redirection
-      - "8843:8843/tcp" # HTTPS portal redirection
-      - "10001:10001/udp" # AP discovery
+      - 8080:8080 # 8080 - device communication
+      - 8443:8443 # 8443 - web admin
+      - 8843:8843 # (optional) 8843 - unifi guest portal https redirect
+      - 8880:8880 # (optional) 8880 - unifi guest portal
+      - 6789:6789 # (optional) 6789 - mobile throughput test
+      - 3478:3478/udp # 3478 - STUN
+      - 10001:10001/udp # 10001 - AP Discovery
+      - 1900:1900/udp # (optional) 1900 - make controller discoverable on L2 network
+      - 5514:5514/udp # (optional) 5514 - remote syslog
   logs:
     image: bash
-    container_name: ${COMPOSE_PROJECT_NAME}_logs
+    container_name: unifi-logs
     depends_on:
-      - controller
+      - unifi
     command: bash -c 'tail -F /unifi/log/*.log'
     restart: always
     volumes:
-      - log:/unifi/log
-
-volumes:
-  db:
-  dbcfg:
-  data:
-  log:
-  cert:
-  init:
-  dir:
-  run:
+      - .local/logs:/unifi/log
+  mongo-express:
+    container_name: unifi-mongo-express
+    image: mongo-express
+    restart: always
+    networks:
+      - unifi
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ubnt-admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ubnt-admin
+    depends_on:
+      - mongo
 
 networks:
   unifi:
