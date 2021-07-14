@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - '*.*.*'
 
 jobs:
   docker:
@@ -34,6 +36,8 @@ jobs:
           if [[ $VERSION =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
             TAGS="$TAGS,${IMAGE_NAME}:latest"
           fi
+
+          echo "IS_TAGGED=${IS_TAGGED} - IMAGE_NAME=${IMAGE_NAME} - TAGS=${TAGS}"
 
           # Set output parameters.
           echo ::set-output name=tags::${TAGS}

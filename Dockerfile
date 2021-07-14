@@ -2,11 +2,11 @@ FROM ubuntu:18.04
 
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG UNIFI_VERSION="6.2.25"
+ARG UNIFI_VERSION="6.2.26"
 ARG PKGURL=https://dl.ui.com/unifi/${UNIFI_VERSION}/unifi_sysvinit_all.deb
 
 LABEL maintainer="Thorsten Klein <iwilltry42@gmail.com>" \
-    release_post="https://community.ui.com/releases/UniFi-Network-Application-6-2-25/d9cb0897-3ef4-4dda-a5d6-c07530ff8a86" \
+    release_post="https://community.ui.com/releases/UniFi-Network-Application-6-2-26/0dfcbc77-8a4f-4e20-bb93-07bbb0237e3a" \
     release_url="${PKGURL}"
 
 
